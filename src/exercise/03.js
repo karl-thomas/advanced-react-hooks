@@ -3,7 +3,7 @@
 
 import React from 'react'
 
-const CountContext = React.createContext(0)
+const CountContext = React.createContext()
 
 function CountProvider(props) {
   const [count, setCount] = React.useState(0)
@@ -11,14 +11,22 @@ function CountProvider(props) {
   return <CountContext.Provider value={value} {...props} />
 }
 
+const useCount = () => {
+  try {
+    const [count, setCount] = React.useContext(CountContext)
+    return [count, setCount]
+  } catch {
+    throw new Error('useCount must be used within a CountProvider')
+  }
+}
+
 function CountDisplay() {
-  const [count] = React.useContext(CountContext)
+  const [count] = useCount()
   return <div>{`The current count is ${count}`}</div>
 }
 
 function Counter() {
-  // 🐨 get the setCount from useContext with the CountContext
-  const [, setCount] = React.useContext(CountContext)
+  const [, setCount] = useCount()
   const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>Increment count</button>
 }
